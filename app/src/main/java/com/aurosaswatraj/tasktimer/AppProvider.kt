@@ -22,7 +22,7 @@ import android.util.Log
 /* More about content provider:https://www.geeksforgeeks.org/content-providers-in-android-with-example/ */
 
 private const val TAG="AppProvider"
-const val CONTENT_AUTHORITY="com.aurosaswarraj.tasktimer.provider"
+const val CONTENT_AUTHORITY="com.aurosaswatraj.tasktimer.provider"
 private const val TASKS=100
 private const val TASKS_ID=101
 
@@ -285,7 +285,7 @@ class AppProvider :ContentProvider() {
             else->{throw IllegalArgumentException("Unknown URI:$uri")}
 
         }
-        Log.d(TAG,"Exiting update function...!")
+        Log.d(TAG,"Exiting update function returning count...! :$count")
         return count
     }
 }
