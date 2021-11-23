@@ -1,6 +1,7 @@
 package com.aurosaswatraj.tasktimer
 
 import android.content.ContentValues
+import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -29,8 +30,26 @@ class MainActivity : AppCompatActivity(),AddEditFragment.OnSaveClicked {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
+//        Check the orientation whether landscape or potrait
+        mTwoPane=resources.configuration.orientation== Configuration.ORIENTATION_LANDSCAPE
 
+        var fragment=supportFragmentManager.findFragmentById(R.id.task_details_container)
+        if (fragment!=null){
+            showEditPane()
+        }
+        else{
+            task_details_container.visibility= if (mTwoPane){View.INVISIBLE} else{View.GONE}
+            mainFragment.visibility=View.VISIBLE
+        }
 
+    }
+    private fun showEditPane()
+    {
+//        There was an existing fragment to edit a task..Make sure the panes are set correctly
+        task_details_container.visibility=View.VISIBLE
+//            Hide the left hand pane,if in single pane view
+        mainFragment.visibility= if (mTwoPane){ View.VISIBLE }
+        else{ View.GONE }
     }
 
     private fun removeEditPane(fragment: Fragment?=null){
@@ -78,6 +97,7 @@ class MainActivity : AppCompatActivity(),AddEditFragment.OnSaveClicked {
             .replace(R.id.task_details_container,newFragment)
             .commit()
 
+        showEditPane()
         Log.d(TAG,"Exiting taskEditRequest")
     }
 

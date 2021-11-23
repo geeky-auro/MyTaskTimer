@@ -59,7 +59,6 @@ class AddEditFragment : Fragment() {
     override fun onDetach() {
         Log.d(TAG,"onDetach: Starts")
         super.onDetach()
-
         listener=null
     }
 
