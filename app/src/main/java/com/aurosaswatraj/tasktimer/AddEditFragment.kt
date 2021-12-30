@@ -1,5 +1,6 @@
 package com.aurosaswatraj.tasktimer
 
+import android.content.ContentValues
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -45,6 +46,69 @@ class AddEditFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_add_edit, container, false)
     }
 
+    //A good place to work with views after the views have been created
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        Log.d(TAG, "onViewCreated: called")
+        if(savedInstanceState==null) {
+            val Task=task
+            if (Task != null) {
+                Log.d(TAG, "onViewCreated: Task details found , editing task ${Task.id}")
+                addedit_name.setText(Task.name)
+                addedit_description.setText(Task.description)
+                addedit_sortorder.setText(Task.sortorder)
+            } else {
+                Log.d(TAG, "onViewCreated: No Arguments, adding new record")
+            }
+        }
+    }
+
+private fun saveTask(){
+//    Update the Database if at least one field has changed
+//    There's no need to hit the database unless this has happened.. :)
+//    TO save the value in the database we will use the content provider..
+//    Note: This functions updates the database if we are editing the existing task
+//          else we are inserting the data into the database
+    val sortOrder=if (addedit_sortorder.text.isNotEmpty()){
+        Integer.parseInt(addedit_sortorder.text.toString())
+    }else{
+        0
+    }
+
+    val values=ContentValues()
+    val Task=task
+    if (Task!=null){
+        Log.d(TAG,"saveTask: Updating Existing Task")
+        if (addedit_name.text.toString()!=Task.name){
+            values.put(TasksContract.Columns.TASK_NAME,addedit_name.text.toString())
+        }
+        if (addedit_description.text.toString()!=Task.description){
+            values.put(TasksContract.Columns.TASK_DESCRIPTION,addedit_description.text.toString())
+        }
+        if (sortOrder!=Task.sortorder){
+            values.put(TasksContract.Columns.TASK_SORT_ORDER,sortOrder)
+        }
+//        Check wheteher after saving anything has been changed or not..!
+        if (values.size()!=0){
+            Log.d(TAG,"saveTask :Updating Task")
+            activity?.contentResolver?.update(TasksContract.buildUriFromId(Task.id),
+            values,null,null)
+        }else{
+            Log.d(TAG,"saveTask: adding new task")
+            if (addedit_name.text.isNotEmpty()){
+                values.put(TasksContract.Columns.TASK_NAME,addedit_name.text.toString())
+            }
+            if (addedit_description.text.isNotEmpty()){
+                values.put(TasksContract.Columns.TASK_DESCRIPTION,
+                addedit_description.text.toString())
+            }
+            values?.put(TasksContract.Columns.TASK_SORT_ORDER,sortOrder)//defaults to zero if empty
+//            Final thing to do is to save
+            activity?.contentResolver?.insert(TasksContract.CONTENT_URI,values)
+        }
+
+    }
+}
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         Log.d(TAG,"onAttach: Starts")
@@ -89,6 +153,7 @@ class AddEditFragment : Fragment() {
         }
 
         addedit_save.setOnClickListener {
+            saveTask()
             listener?.onSaveClicked()
         }
     }
@@ -111,11 +176,6 @@ class AddEditFragment : Fragment() {
             }
     }
 
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        Log.d(TAG, "onViewCreated: called")
-        super.onViewCreated(view, savedInstanceState)
-    }
 
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {

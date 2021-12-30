@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity(),AddEditFragment.OnSaveClicked {
     {
 //        There was an existing fragment to edit a task..Make sure the panes are set correctly
         task_details_container.visibility=View.VISIBLE
-//            Hide the left hand pane,if in single pane view
+//      Hide the left hand pane,if in single pane view
         mainFragment.visibility= if (mTwoPane){ View.VISIBLE }
         else{ View.GONE }
     }
