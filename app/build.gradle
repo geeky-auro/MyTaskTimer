@@ -5,6 +5,9 @@ plugins {
 
 }
 
+androidExtensions{
+    experimental = true
+}
 
 android {
     compileSdk 30

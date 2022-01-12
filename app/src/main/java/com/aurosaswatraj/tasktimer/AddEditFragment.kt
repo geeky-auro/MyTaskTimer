@@ -57,6 +57,7 @@ class AddEditFragment : Fragment() {
                 addedit_description.setText(Task.description)
                 addedit_sortorder.setText(Task.sortorder)
             } else {
+//                No task so we must be adding a new task and NOT editing an existing one..!
                 Log.d(TAG, "onViewCreated: No Arguments, adding new record")
             }
         }
@@ -87,7 +88,7 @@ private fun saveTask(){
         if (sortOrder!=Task.sortorder){
             values.put(TasksContract.Columns.TASK_SORT_ORDER,sortOrder)
         }
-//        Check wheteher after saving anything has been changed or not..!
+//        Check whether after saving anything has been changed or not..!
         if (values.size()!=0){
             Log.d(TAG,"saveTask :Updating Task")
             activity?.contentResolver?.update(TasksContract.buildUriFromId(Task.id),
@@ -116,7 +117,7 @@ private fun saveTask(){
         listener=context
     }
         else{
-            throw RuntimeException(context.toString() + "Must implement OnSaveClicked")
+            throw RuntimeException("$context Must implement OnSaveClicked")
     }
 
     }
