@@ -7,6 +7,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
+import kotlinx.android.synthetic.main.fragment_main_activity.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -24,6 +26,12 @@ private const val TAG="MainActivityFragment"
 class MainActivityFragment : Fragment() {
 
 
+//    For referring cursor adapter..
+    private val mAdapter=CursorRecyclerViewAdapter(null)
+//    We passed null as the cursor, because we don't have one that's available yet.
+//    Passing null will cause the adapter to return a view containing our instructions,
+//    and that's exactly what we want to happen, when the app starts with
+//    no task records.
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -46,6 +54,9 @@ class MainActivityFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         Log.d(TAG, "onViewCreated: called")
+        task_list.layoutManager=LinearLayoutManager(context)
+        task_list.adapter=mAdapter
+
         super.onViewCreated(view, savedInstanceState)
     }
 

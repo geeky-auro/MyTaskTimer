@@ -1,5 +1,6 @@
 package com.aurosaswatraj.tasktimer
 
+import android.content.Context
 import android.database.Cursor
 import android.util.Log
 import android.view.LayoutInflater
@@ -16,11 +17,12 @@ class TaskViewHolder(override val containerView:View):
     RecyclerView.ViewHolder(containerView),LayoutContainer{
 
 }
-
+var contexti:Context?=null
 class CursorRecyclerViewAdapter(private var cursor: Cursor?) :RecyclerView.Adapter<TaskViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
         Log.d(TAG,"onCreateViewHolder STARTS: new View Requested.!")
         val view=LayoutInflater.from(parent.context).inflate(R.layout.task_list_item,parent,false)
+        contexti=parent.context
         return TaskViewHolder(view)
     }
 
@@ -31,12 +33,8 @@ class CursorRecyclerViewAdapter(private var cursor: Cursor?) :RecyclerView.Adapt
 //        check whether the cursor is null i.e it has no records available
         if (cursor==null || cursor.count==0){
             Log.d(TAG,"onBindViewHolder:providing instructions")
-            holder.tli_name.text = "Instructions"
-            holder.tli_description.text ="Use the add button (+) in the toolbar above to create new tasks." +
-                    "\n\nTasks with lower sort orders will be placed higher up the list." +
-                    "Tasks with the same sort order will be sorted alphabetically." +
-                    "\n\nTapping a task will start the timer for that task (and will stop the timer for any previous task that was being timed)." +
-                    "\n\nEach task has Edit and Delete buttons if you want to change the details or remove the task."
+            holder.tli_name.setText(R.string.instructions_headings)
+            holder.tli_description.setText(R.string.instructions)
             holder.tli_edit.visibility=View.GONE
             holder.tli_delete.visibility=View.GONE
 
@@ -52,7 +50,7 @@ class CursorRecyclerViewAdapter(private var cursor: Cursor?) :RecyclerView.Adapt
                 cursor.getString(cursor.getColumnIndex(TasksContract.Columns.TASK_DESCRIPTION)),
                 cursor.getInt(cursor.getColumnIndex(TasksContract.Columns.TASK_SORT_ORDER))
             )
-//            Remeber that ID isn't set in the constructor
+//            Remember that ID isn't set in the constructor
             task.id=cursor.getLong(cursor.getColumnIndex(TasksContract.Columns.ID))
 
             holder.tli_name.text=task.name
@@ -64,6 +62,46 @@ class CursorRecyclerViewAdapter(private var cursor: Cursor?) :RecyclerView.Adapt
     }
 
     override fun getItemCount(): Int {
-        TODO("Not yet implemented")
+      Log.d(TAG,"getItemCount: starts")
+        val cursor=cursor
+        val count=if (cursor==null || cursor.count==0){
+            1 //because we populate single viewholder with instructions
+        }else{
+            cursor.count
+        }
+        Log.d(TAG,"Returning $count")
+        return count
     }
+
+
+    /**
+     *
+     * Swap in a new cursor,returning the old cursor
+     * The returned old cursor is *not* closed
+     *
+     * @param newcursor The new cursor to be used
+     * @return Reurns the previously set Cursors, or null if there wasn't
+     * one.
+     * If the given new Cursor is the same instance as the previous set
+     * Cursor, null is returned.
+     * */
+
+    fun swapCursoe(newCursor:Cursor?):Cursor?{
+//        This function should be called whenever the cursor that the adapters using is changed
+        if (newCursor===cursor){
+            return null
+        }
+        val numItems=itemCount
+        val oldCursor=cursor
+        if (newCursor!=null){
+//            notify the observers about the new cursor
+            notifyDataSetChanged()
+        }else{
+//            notify the observers about the lack of a data set
+            notifyItemRangeRemoved(0,numItems)
+        }
+        return oldCursor
+    }
+
+
 }
