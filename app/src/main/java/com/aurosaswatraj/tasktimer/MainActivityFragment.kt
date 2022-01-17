@@ -3,10 +3,11 @@ package com.aurosaswatraj.tasktimer
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_main_activity.*
 
@@ -21,14 +22,26 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 
-private const val TAG="MainActivityFragment"
+private const val TAG = "MainActivityFragment"
 
 class MainActivityFragment : Fragment() {
 
+//    Create a ViewModel instance..
+//    Describe viewModel. Remember to subscribe to it in onCreate.
 
-//    For referring cursor adapter..
-    private val mAdapter=CursorRecyclerViewAdapter(null)
-//    We passed null as the cursor, because we don't have one that's available yet.
+
+    // ViewModel (Not implemented Yet)
+// implementation "android.arch.lifecycle:extensions:2.4.0"
+    private val viewModel by lazy {
+        // ViewModelProviders.of(activity!!).get(TaskTimerViewModel::class.java)
+        ViewModelProvider(this).get(TaskTimerViewModel::class.java)
+    }
+
+
+    //    For referring cursor adapter..
+    private val mAdapter = CursorRecyclerViewAdapter(null)
+
+    //    We passed null as the cursor, because we don't have one that's available yet.
 //    Passing null will cause the adapter to return a view containing our instructions,
 //    and that's exactly what we want to happen, when the app starts with
 //    no task records.
@@ -36,7 +49,7 @@ class MainActivityFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Log.d(TAG,"onCreateView Called")
+        Log.d(TAG, "onCreateView Called")
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_main_activity, container, false)
     }
@@ -50,12 +63,18 @@ class MainActivityFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "onCreate: called")
         super.onCreate(savedInstanceState)
+        //            to provide the new cursor, when we observe that it has changed.
+//            When the cursor changes, we pass the new one to swapCursor,
+//            causing the adapter to get the new data.
+        viewModel.cursor.observe(this, { cursor -> mAdapter.swapCursoe(cursor)?.close() })
     }
+
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         Log.d(TAG, "onViewCreated: called")
-        task_list.layoutManager=LinearLayoutManager(context)
-        task_list.adapter=mAdapter
+        task_list.layoutManager = LinearLayoutManager(context) // <-- set up RecyclerView
+        task_list.adapter = mAdapter
 
         super.onViewCreated(view, savedInstanceState)
     }
@@ -109,8 +128,6 @@ class MainActivityFragment : Fragment() {
         Log.d(TAG, "onDetach: called")
         super.onDetach()
     }
-
-
 
 
 }

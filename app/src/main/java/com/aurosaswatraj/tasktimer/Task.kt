@@ -4,8 +4,8 @@ import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-class Task(val name:String,val description:String,val sortorder:Int) : Parcelable {
-    var id:Long=0
+class Task(val name: String, val description: String, val sortorder: Int) : Parcelable {
+    var id: Long = 0
 }
 
 /**A Parcelable is the Android implementation of the Java Serializable. It assumes a certain structure and way of processing it. This way a Parcelable can be processed relatively fast, compared to the standard Java serialization.

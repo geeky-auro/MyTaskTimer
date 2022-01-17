@@ -21,61 +21,62 @@ import android.util.Log
 
 /* More about content provider:https://www.geeksforgeeks.org/content-providers-in-android-with-example/ */
 
-private const val TAG="AppProvider"
-const val CONTENT_AUTHORITY="com.aurosaswatraj.tasktimer.provider"
-private const val TASKS=100
-private const val TASKS_ID=101
+private const val TAG = "AppProvider"
+const val CONTENT_AUTHORITY = "com.aurosaswatraj.tasktimer.provider"
+private const val TASKS = 100
+private const val TASKS_ID = 101
 
-private const val TIMINGS=200
-private const val TIMINGS_ID=201
+private const val TIMINGS = 200
+private const val TIMINGS_ID = 201
 
-private const val TASKS_DURATIONS=400
-private const val TASKS_DURATIONS_ID=401
+private const val TASKS_DURATIONS = 400
+private const val TASKS_DURATIONS_ID = 401
 
-val CONTENT_AUTHORITY_URI:Uri= Uri.parse("content://$CONTENT_AUTHORITY")
+val CONTENT_AUTHORITY_URI: Uri = Uri.parse("content://$CONTENT_AUTHORITY")
 //URI-Uniform Resource Identifier..! :: https://datatracker.ietf.org/doc/html/rfc3986#section-3
-class AppProvider :ContentProvider() {
+
+@Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
+class AppProvider : ContentProvider() {
 
     private val uriMatcher by lazy { buildUriMatcher() }
 
-    private fun buildUriMatcher():UriMatcher {
-       Log.d(TAG,"buildURIMatcher starts")
+    private fun buildUriMatcher(): UriMatcher {
+        Log.d(TAG, "buildURIMatcher starts")
 
 //      to match the content URI
 //      every time user access table under content provider
 
-        val matcher=UriMatcher(UriMatcher.NO_MATCH)
+        val matcher = UriMatcher(UriMatcher.NO_MATCH)
 
 //        to access whole table
 //        e.g. content://com.aurosaswatraj.tasktimer.provider/Tasks
-        matcher.addURI(CONTENT_AUTHORITY,TasksContract.TABLE_NAME, TASKS)
+        matcher.addURI(CONTENT_AUTHORITY, TasksContract.TABLE_NAME, TASKS)
 
 //        to access a particular row
 //        of the table
 //        e.g. content://com.aurosaswatraj.tasktimer.provider/Tasks/8
-          matcher.addURI(CONTENT_AUTHORITY,"${TasksContract.TABLE_NAME}/#", TASKS_ID)
+        matcher.addURI(CONTENT_AUTHORITY, "${TasksContract.TABLE_NAME}/#", TASKS_ID)
 //
-        matcher.addURI(CONTENT_AUTHORITY,TimingsContract.TABLE_NAME, TIMINGS)
-        matcher.addURI(CONTENT_AUTHORITY,"${TimingsContract.TABLE_NAME}/#", TIMINGS_ID)
+        matcher.addURI(CONTENT_AUTHORITY, TimingsContract.TABLE_NAME, TIMINGS)
+        matcher.addURI(CONTENT_AUTHORITY, "${TimingsContract.TABLE_NAME}/#", TIMINGS_ID)
 //
 //
 //        matcher.addURI(CONTENT_AUTHORITY,DurationsContract.TABLE_NAME, TASKS_DURATIONS)
 //        matcher.addURI(CONTENT_AUTHORITY,"${DurationsContract.TABLE_NAME}/#", TASKS_DURATIONS_ID)
 //
 
-
         return matcher
     }
 
     override fun onCreate(): Boolean {
-    Log.d(TAG,"onCreate:Starts")
+        Log.d(TAG, "onCreate:Starts")
 //        val appDatabase=AppDatabase(context)
-/**        We cannot create our database instance as it can only be accessed by getInstance method*/
+        /**        We cannot create our database instance as it can only be accessed by getInstance method*/
         return true
     }
 
 
-    override fun getType(uri: Uri): String? {
+    override fun getType(uri: Uri): String {
 //      getType Function is used returning MIME Types..!
         val match = uriMatcher.match(uri)
 
@@ -104,12 +105,12 @@ class AppProvider :ContentProvider() {
         selectionArgs: Array<out String>?,
         sortOrder: String?
     ): Cursor? {
-        Log.d(TAG,"query called with uri $uri")
-        val match=uriMatcher.match(uri)
+        Log.d(TAG, "query called with uri $uri")
+        val match = uriMatcher.match(uri)
         //        matcher is used to decide what matcher has been passed.>!
-        Log.d(TAG,"query match is $match")
+        Log.d(TAG, "query match is $match")
 //        use a query builder to build the query that will be executed by the database
-        val queryBuilder:SQLiteQueryBuilder= SQLiteQueryBuilder()
+        val queryBuilder = SQLiteQueryBuilder()
 //        Copy paste the code..!
         when (match) {
             TASKS -> queryBuilder.tables = TasksContract.TABLE_NAME // SELECT ______ FROM Tasks
@@ -120,7 +121,7 @@ class AppProvider :ContentProvider() {
                 queryBuilder.appendWhere("${TasksContract.Columns.ID} = ") // SELECT ______ FROM Tasks WHERE (_id =)      // <-- change method
                 queryBuilder.appendWhereEscapeString("$taskId") // SELECT ______ FROM Tasks WHERE (id = 'taskId')
             }
-        //queryBuilder.appendWhereEscapeString() is used to append values not append entire where clause
+            //queryBuilder.appendWhereEscapeString() is used to append values not append entire where clause
             TIMINGS -> queryBuilder.tables = TimingsContract.TABLE_NAME
 
             TIMINGS_ID -> {
@@ -142,97 +143,122 @@ class AppProvider :ContentProvider() {
             else -> throw IllegalArgumentException("Unknown URI: $uri")
         }
 
-        val db = AppDatabase.getInstance(context!!).readableDatabase // Our database in "TaskTimer.db"
-        val cursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder)
+        val db =
+            AppDatabase.getInstance(context!!).readableDatabase // Our database in "TaskTimer.db"
+        val cursor =
+            queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder)
         Log.d(TAG, "query: rows in returned cursor = ${cursor.count}") // TODO remove this line
 
         return cursor
     }
 
 
-
     override fun insert(uri: Uri, values: ContentValues?): Uri? {
-        Log.d(TAG,"insert called with uri $uri")
-        val match=uriMatcher.match(uri)
+        Log.d(TAG, "insert called with uri $uri")
+        val match = uriMatcher.match(uri)
         //        matcher is used to decide what matcher has been passed.>!
-        Log.d(TAG,"insert match is $match")
-        val recordId:Long
-        val returnUri:Uri
-        when(match){
-            TASKS->{
-                val db = AppDatabase.getInstance(context!!).writableDatabase // Our database in "TaskTimer.db"
-                recordId=db.insert(TasksContract.TABLE_NAME,null,values)
-                if (recordId!=-1L){
-                    returnUri=TasksContract.buildUriFromId(recordId)
-                }
-                else{
+        Log.d(TAG, "insert match is $match")
+        val recordId: Long
+        val returnUri: Uri
+        when (match) {
+            TASKS -> {
+                val db =
+                    AppDatabase.getInstance(context!!).writableDatabase // Our database in "TaskTimer.db"
+                recordId = db.insert(TasksContract.TABLE_NAME, null, values)
+                if (recordId != -1L) {
+                    returnUri = TasksContract.buildUriFromId(recordId)
+                } else {
                     throw SQLException("Failed to insert,Uri was $uri")
                 }
 
             }
-            TIMINGS->{
+            TIMINGS -> {
                 val db = AppDatabase.getInstance(context!!).writableDatabase
-                recordId=db.insert(TimingsContract.TABLE_NAME,null,values)
-                if (recordId!=-1L){
-                    returnUri=TasksContract.buildUriFromId(recordId)
-                }
-                else{
+                recordId = db.insert(TimingsContract.TABLE_NAME, null, values)
+                if (recordId != -1L) {
+                    returnUri = TimingsContract.buildUriFromId(recordId)
+                } else {
                     throw SQLException("Failed to insert,Uri was $uri")
                 }
             }
-            else->{throw java.lang.IllegalArgumentException("Unknown uri:$uri")}
+            else -> {
+                throw java.lang.IllegalArgumentException("Unknown uri:$uri")
+            }
         }
-        Log.d(TAG,"Existing insert,returning $returnUri")
+
+        if (recordId > 0) {
+            // something was inserted
+            Log.d(TAG, "insert: Setting notifyChange with $uri")
+            context?.contentResolver?.notifyChange(uri, null)
+        }
+
+
+        Log.d(TAG, "Existing insert,returning $returnUri")
         return returnUri
     }
 
     override fun delete(uri: Uri, selection: String?, selectionArgs: Array<out String>?): Int {
-        Log.d(TAG,"delete called with uri $uri")
-        val match=uriMatcher.match(uri)
+        Log.d(TAG, "delete called with uri $uri")
+        val match = uriMatcher.match(uri)
         //        matcher is used to decide what matcher has been passed.>!
-        Log.d(TAG,"delete match is $match")
+        Log.d(TAG, "delete match is $match")
 
 //        Database to count how many rows were updated?
-        var count:Int
+        var count: Int
 //        Database to know the selection criteria
-        var selectionCriteria:String
-        when (match){
+        var selectionCriteria: String
+        when (match) {
 //            performing Update against the whole table..!
-            TASKS->{
+            TASKS -> {
                 val db = AppDatabase.getInstance(context!!).writableDatabase
-                count=db.delete(TasksContract.TABLE_NAME,selection,selectionArgs)
+                count = db.delete(TasksContract.TABLE_NAME, selection, selectionArgs)
             }
 //            Performing the update on a single row..!
-            TASKS_ID->{
+            TASKS_ID -> {
                 val db = AppDatabase.getInstance(context!!).writableDatabase
-                val id=TasksContract.getId(uri)
-                selectionCriteria="${TasksContract.Columns.ID} = $id"
-                if (selection!=null && selection.isNotEmpty()){
-                    selectionCriteria = "$selectionCriteria AND ($selection)"
+                val id = TasksContract.getId(uri)
+                selectionCriteria = "${TasksContract.Columns.ID} = $id"
+
+                if (selection != null && selection.isNotEmpty()) {
+                    selectionCriteria += " AND ($selection)"
                 }
-                count=db.delete(TasksContract.TABLE_NAME,selectionCriteria,selectionArgs)
+
+                count = db.delete(TasksContract.TABLE_NAME, selectionCriteria, selectionArgs)
             }
 
-            TIMINGS->{
+            TIMINGS -> {
                 val db = AppDatabase.getInstance(context!!).writableDatabase
-                count=db.delete(TimingsContract.TABLE_NAME,selection,selectionArgs)
+                count = db.delete(TimingsContract.TABLE_NAME, selection, selectionArgs)
             }
 //            Performing the update on a single row..!
-            TIMINGS_ID->{
+            TIMINGS_ID -> {
                 val db = AppDatabase.getInstance(context!!).writableDatabase
-                val id=TasksContract.getId(uri)
-                selectionCriteria="${TimingsContract.Columns.ID} = $id"
-                if (selection!=null && selection.isNotEmpty()){
-                    selectionCriteria = "$selectionCriteria AND ($selection)"
+                val id = TimingsContract.getId(uri)
+                selectionCriteria = "${TimingsContract.Columns.ID} = $id"
+
+                if (selection != null && selection.isNotEmpty()) {
+                    selectionCriteria += " AND ($selection)"
                 }
-                count=db.delete(TimingsContract.TABLE_NAME,selectionCriteria,selectionArgs)
+
+                count = db.delete(TimingsContract.TABLE_NAME, selectionCriteria, selectionArgs)
             }
 
-            else->{throw IllegalArgumentException("Unknown URI:$uri")}
+
+            else -> {
+                throw IllegalArgumentException("Unknown URI:$uri")
+            }
 
         }
-        Log.d(TAG,"Exiting Delete function...!")
+
+        if (count > 0) {
+            // something was deleted
+            Log.d(TAG, "delete: Setting notifyChange with $uri")
+            context?.contentResolver?.notifyChange(uri, null)
+        }
+
+        Log.d(TAG, "Exiting delete, returning $count")
         return count
+
     }
 
     override fun update(
@@ -241,51 +267,67 @@ class AppProvider :ContentProvider() {
         selection: String?,
         selectionArgs: Array<out String>?
     ): Int {
-        Log.d(TAG,"update called with uri $uri")
-        val match=uriMatcher.match(uri)
+        Log.d(TAG, "update called with uri $uri")
+        val match = uriMatcher.match(uri)
         //        matcher is used to decide what matcher has been passed.>!
-        Log.d(TAG,"update match is $match")
+        Log.d(TAG, "update match is $match")
 
 //        Database to count how many rows were updated?
-        var count:Int
+        var count: Int
 //        Database to know the selection criteria
-        var selectionCriteria:String
-        when (match){
+        var selectionCriteria: String
+        when (match) {
 //            performing Update against the whole table..!
-            TASKS->{
+            TASKS -> {
                 val db = AppDatabase.getInstance(context!!).writableDatabase
-                count=db.update(TasksContract.TABLE_NAME,values,selection,selectionArgs)
+                count = db.update(TasksContract.TABLE_NAME, values, selection, selectionArgs)
             }
 //            Performing the update on a single row..!
-            TASKS_ID->{
+            TASKS_ID -> {
                 val db = AppDatabase.getInstance(context!!).writableDatabase
-                val id=TasksContract.getId(uri)
-                selectionCriteria="${TasksContract.Columns.ID} = $id"
-                if (selection!=null && selection.isNotEmpty()){
-                    selectionCriteria = "$selectionCriteria AND ($selection)"
+                val id = TasksContract.getId(uri)
+                selectionCriteria = "${TasksContract.Columns.ID} = $id"
+
+                if (selection != null && selection.isNotEmpty()) {
+                    selectionCriteria += " AND ($selection)"
                 }
-                count=db.update(TasksContract.TABLE_NAME,values,selectionCriteria,selectionArgs)
+
+                count =
+                    db.update(TasksContract.TABLE_NAME, values, selectionCriteria, selectionArgs)
             }
 
-            TIMINGS->{
+            TIMINGS -> {
                 val db = AppDatabase.getInstance(context!!).writableDatabase
-                count=db.update(TimingsContract.TABLE_NAME,values,selection,selectionArgs)
+                count = db.update(TimingsContract.TABLE_NAME, values, selection, selectionArgs)
             }
 //            Performing the update on a single row..!
-            TIMINGS_ID->{
+            TIMINGS_ID -> {
                 val db = AppDatabase.getInstance(context!!).writableDatabase
-                val id=TimingsContract.getId(uri)
-                selectionCriteria="${TimingsContract.Columns.ID} = $id"
-                if (selection!=null && selection.isNotEmpty()){
-                    selectionCriteria = "$selectionCriteria AND ($selection)"
+                val id = TimingsContract.getId(uri)
+                selectionCriteria = "${TimingsContract.Columns.ID} = $id"
+
+                if (selection != null && selection.isNotEmpty()) {
+                    selectionCriteria += " AND ($selection)"
                 }
-                count=db.update(TimingsContract.TABLE_NAME,values,selectionCriteria,selectionArgs)
+
+                count =
+                    db.update(TimingsContract.TABLE_NAME, values, selectionCriteria, selectionArgs)
             }
 
-            else->{throw IllegalArgumentException("Unknown URI:$uri")}
+            else -> {
+                throw IllegalArgumentException("Unknown URI:$uri")
+            }
 
         }
-        Log.d(TAG,"Exiting update function returning count...! :$count")
+
+        if (count > 0) {
+//            Something was Updated
+            Log.d(TAG, "Update :Setting notifyChange with $uri ")
+//            call the ContextResolver to notify the change,
+            context?.contentResolver?.notifyChange(uri, null)
+        }
+
+        Log.d(TAG, "Exiting update function returning count...! :$count")
         return count
     }
 }

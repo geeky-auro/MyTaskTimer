@@ -2,9 +2,10 @@ package com.aurosaswatraj.tasktimer
 
 /**Use this class as a template for singleton classes..!*/
 
-open class SingletonHolder<out T: Any, in A>(creator: (A) -> T) {
+open class SingletonHolder<out T : Any, in A>(creator: (A) -> T) {
     private var creator: ((A) -> T)? = creator
-    @Volatile private var instance: T? = null
+    @Volatile
+    private var instance: T? = null
 
     fun getInstance(arg: A): T {
         val i = instance
