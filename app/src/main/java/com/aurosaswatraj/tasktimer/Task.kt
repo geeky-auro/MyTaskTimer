@@ -36,7 +36,7 @@ class Task(val name: String, val description: String, val sortorder: Int) : Parc
 //
 //Tutorial 3:https://dzone.com/articles/using-android-parcel*/
 
-/**TO make pacelize active use this in gradle plugins ( id 'kotlin-android-extensions')*/
+/**To make parcelize active use this in gradle plugins ( id 'kotlin-android-extensions')*/
 
 // About Data Class: https://kotlinlang.org/docs/data-classes.html
 

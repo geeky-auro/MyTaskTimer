@@ -90,6 +90,21 @@ class TaskTimerViewModel(application: Application) : AndroidViewModel(applicatio
         databaseCursor.postValue(cursor)
 
     }
+//     Refer the screenshots for referring deletion in ViewModel Class
+
+    fun deleteTask(taskId:Long){
+        getApplication<Application>().contentResolver?.delete(TasksContract.buildUriFromId(taskId),null,null)
+        /** We'll pass in the ID of the task to delete, and call the ContentResolver's delete function to perform the deletion.
+        Our ContentProvider will take care of deleting an individual task, if its ID is provided in the URI.
+        The buildURIFromId function that we added to the TasksContract class,
+        will return a URI with the ID appended.
+        Because we're providing the ID, we don't need to use the last two parameters;
+        the where clause and selection args.
+        We just build up the URI from the ID of the task that's been passed to the function,
+        then call the delete function of the Content resolver.
+        The onDeleteClick function in MainActivityFragment will then call the ViewModel's delete task function,
+        to tell the ViewModel to delete the task.*/
+    }
 
     //That function gets called when the ViewModel's no longer used and can be destroyed.
     override fun onCleared() {

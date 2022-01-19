@@ -14,7 +14,7 @@ import kotlinx.android.synthetic.main.content_main.*
 
 private const val TAG = "MainActivity"
 
-class MainActivity : AppCompatActivity(), AddEditFragment.OnSaveClicked {
+class MainActivity : AppCompatActivity(), AddEditFragment.OnSaveClicked,MainActivityFragment.OnTaskEdit {
 
     //    Whether the activity is in 2-pane mode
 //    i.e runnung in landscape, or on a tablet
@@ -79,6 +79,10 @@ class MainActivity : AppCompatActivity(), AddEditFragment.OnSaveClicked {
         Log.d(TAG, "onSaveClicked: called")
         val fragment = supportFragmentManager.findFragmentById(R.id.task_details_container)
         removeEditPane(fragment)
+    }
+
+    override fun onTaskEdit(task: Task) {
+        taskEditRequest(task)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

@@ -8,7 +8,7 @@ object TasksContract {
     //    We are going to use internal access modifier so that outside apps cannot access the tables
     internal const val TABLE_NAME = "Tasks"
 
-//    Tasks fields
+    //    Tasks fields
     /** The URI to ACCESS THE TASK TABLE*/
     const val CONTENT_TYPE = "vnd.android.cursor.dir/vnd.$CONTENT_AUTHORITY.$TABLE_NAME"
     const val CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.$CONTENT_AUTHORITY.$TABLE_NAME"
@@ -21,6 +21,7 @@ object TasksContract {
         const val TASK_DESCRIPTION = "Description"
         const val TASK_SORT_ORDER = "SortOrder"
     }
+
 
     fun getId(uri: Uri): Long {
         return ContentUris.parseId(uri)

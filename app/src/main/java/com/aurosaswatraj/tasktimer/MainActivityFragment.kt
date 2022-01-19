@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_main_activity.*
+import java.lang.RuntimeException
 
 
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -22,7 +23,7 @@ import kotlinx.android.synthetic.main.fragment_main_activity.*
 
 private const val TAG = "MainActivityFragment"
 
-class MainActivityFragment : Fragment() {
+class MainActivityFragment : Fragment(),CursorRecyclerViewAdapter.onTaskClickListener {
 
 //    Create a ViewModel instance..
 //    Describe viewModel. Remember to subscribe to it in onCreate.
@@ -37,12 +38,17 @@ class MainActivityFragment : Fragment() {
 
 
     //    For referring cursor adapter..
-    private val mAdapter = CursorRecyclerViewAdapter(null)
+    private val mAdapter = CursorRecyclerViewAdapter(null,this)
 
     //    We passed null as the cursor, because we don't have one that's available yet.
 //    Passing null will cause the adapter to return a view containing our instructions,
 //    and that's exactly what we want to happen, when the app starts with
 //    no task records.
+
+    interface OnTaskEdit{
+        fun onTaskEdit(task:Task)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -56,6 +62,10 @@ class MainActivityFragment : Fragment() {
     override fun onAttach(context: Context) {
         Log.d(TAG, "onAttach: called")
         super.onAttach(context)
+
+        if (context !is OnTaskEdit){
+            throw RuntimeException("${context.toString()} must implement onTaskEdit")
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -80,6 +90,21 @@ class MainActivityFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         Log.d(TAG, "onActivityCreated: called")
         super.onActivityCreated(savedInstanceState)
+    }
+
+    override fun onEditClick(task: Task) {
+//        we'll call the activity's onTaskEdit function in onEditClick.
+       (activity as OnTaskEdit?)?.onTaskEdit(task)
+    }
+
+    override fun onDeleteClick(task: Task) {
+      viewModel.deleteTask(task.id)
+        /**The onDeleteClick function in MainActivityFragment will then call the ViewModel's delete task function,
+        to tell the ViewModel to delete the task.**/
+    }
+
+    override fun onTaskLongClick(task: Task) {
+        TODO("Not yet implemented")
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
@@ -126,4 +151,6 @@ class MainActivityFragment : Fragment() {
         Log.d(TAG, "onDetach: called")
         super.onDetach()
     }
+
+
 }

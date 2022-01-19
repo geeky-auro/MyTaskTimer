@@ -19,7 +19,7 @@ import android.util.Log
  * and it facilitates other applications to securely access and modifies that data based on the user requirements.
  **/
 
-/* More about content provider:https://www.geeksforgeeks.org/content-providers-in-android-with-example/ */
+/* More about content provider: https://www.geeksforgeeks.org/content-providers-in-android-with-example/ */
 
 private const val TAG = "AppProvider"
 const val CONTENT_AUTHORITY = "com.aurosaswatraj.tasktimer.provider"
@@ -155,6 +155,7 @@ class AppProvider : ContentProvider() {
 
     override fun insert(uri: Uri, values: ContentValues?): Uri? {
         Log.d(TAG, "insert called with uri $uri")
+//        The code for the matched node (added using addURI), or -1 if there is no matched node.
         val match = uriMatcher.match(uri)
         //        matcher is used to decide what matcher has been passed.>!
         Log.d(TAG, "insert match is $match")

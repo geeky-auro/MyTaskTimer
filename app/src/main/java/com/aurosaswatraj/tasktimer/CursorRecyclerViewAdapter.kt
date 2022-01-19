@@ -12,10 +12,48 @@ import kotlinx.android.synthetic.main.task_list_item.*
 private const val TAG = "CursorRecyclerViewAdapt"
 
 class TaskViewHolder(override val containerView: View) :
-    RecyclerView.ViewHolder(containerView), LayoutContainer
+    RecyclerView.ViewHolder(containerView), LayoutContainer{
+//    By using an interface We can notify the fragment/activity that a button is tapped
+//    MainActivityFragment will implement the functions in the interface,
+//    and we can be sure that it contains the functions that we're going to call.
+        fun bind(task:Task,listener :CursorRecyclerViewAdapter.onTaskClickListener){
+//           we can pass a reference to it, to our ViewHolder.
+//           The ViewHolder will then call the appropriate functions on the listener,
+//           and it will do that in its onClick functions.
+            tli_name.text=task.name
+            tli_description.text=task.description
+            tli_edit.visibility=View.VISIBLE
+            tli_delete.visibility=View.VISIBLE
 
-class CursorRecyclerViewAdapter(private var cursor: Cursor?) :
+            tli_edit.setOnClickListener{
+                listener.onEditClick(task)
+            }
+
+            tli_delete.setOnClickListener{
+                listener.onDeleteClick(task)
+            }
+//            The onLongClickListener has to return true if it has handled the tap
+            containerView.setOnLongClickListener{
+                listener.onTaskLongClick(task)
+                true
+            }
+        }
+//We'll pass in the task, because ultimately we'll want to provide the task details
+//        to whatever is listening for the buttons to be tapped.
+    }
+
+
+class CursorRecyclerViewAdapter(private var cursor: Cursor?,private val listener:onTaskClickListener) :
     RecyclerView.Adapter<TaskViewHolder>() {
+
+    interface onTaskClickListener{
+        fun onEditClick(task:Task)
+        fun onDeleteClick(task:Task)
+        fun onTaskLongClick(task:Task)
+//      Now that we've defined the interface, we can pass in a reference to something that implements that interface,
+//      so that the adapter knows what to call.(Adding in the primary Constructor)
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
         Log.d(TAG, "onCreateViewHolder STARTS: new View Requested.!")
         val view =
@@ -49,16 +87,21 @@ class CursorRecyclerViewAdapter(private var cursor: Cursor?) :
 //            Remember that ID isn't set in the constructor
             task.id = cursor.getLong(cursor.getColumnIndex(TasksContract.Columns.ID))
 
-            holder.tli_name.text = task.name
-            holder.tli_description.text = task.description
-            holder.tli_edit.visibility = View.VISIBLE
-            holder.tli_delete.visibility = View.VISIBLE
+//            holder.tli_name.text = task.name
+//            holder.tli_description.text = task.description
+//            holder.tli_edit.visibility = View.VISIBLE
+//            holder.tli_delete.visibility = View.VISIBLE
+                /**Replace these lines with holder.bind(task)*/
+//            We could set our onClickListeners for the buttons in this onBindViewHolder function,
+//            Not Recommended..!
+//            Another approach, and the one we're going to use here, is to give our view holder a bind function.
+            holder.bind(task,listener)
         }
 
     }
 
     override fun getItemCount(): Int {
-        Log.d(TAG, "getItemCount: starts")
+
         val cursor = cursor
         val count = if (cursor == null || cursor.count == 0) {
             1 //because we populate single viewholder with instructions
