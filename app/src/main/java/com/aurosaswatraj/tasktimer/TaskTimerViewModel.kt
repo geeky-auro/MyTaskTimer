@@ -9,6 +9,10 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlin.concurrent.thread
 
 // The view model class that's going to provide it with data.
 
@@ -79,31 +83,57 @@ class TaskTimerViewModel(application: Application) : AndroidViewModel(applicatio
         )
 
 //        <order by>Tasks.sortOrder, Tasks.Name
-        val sortOrder =
-            "${TasksContract.Columns.TASK_SORT_ORDER}, ${TasksContract.Columns.TASK_NAME}"
+        val sortOrder ="${TasksContract.Columns.TASK_SORT_ORDER}, ${TasksContract.Columns.TASK_NAME}"
+
+
+//
+//        thread {
+////      Define our cursor using to projection array and the sort order.
+//            val cursor = getApplication<Application>().contentResolver.query(
+//                TasksContract.CONTENT_URI, projection, null, null,
+//                sortOrder
+//            )
+////        setting the database cursor value.
+//            databaseCursor.postValue(cursor)
+//        }
+
+        GlobalScope.launch {
 //      Define our cursor using to projection array and the sort order.
-        val cursor = getApplication<Application>().contentResolver.query(
-            TasksContract.CONTENT_URI, projection, null, null,
-            sortOrder
-        )
+            val cursor = getApplication<Application>().contentResolver.query(
+                TasksContract.CONTENT_URI, projection, null, null,
+                sortOrder
+            )
 //        setting the database cursor value.
-        databaseCursor.postValue(cursor)
+            databaseCursor.postValue(cursor)
+        }
 
     }
 //     Refer the screenshots for referring deletion in ViewModel Class
 
-    fun deleteTask(taskId:Long){
-        getApplication<Application>().contentResolver?.delete(TasksContract.buildUriFromId(taskId),null,null)
-        /** We'll pass in the ID of the task to delete, and call the ContentResolver's delete function to perform the deletion.
-        Our ContentProvider will take care of deleting an individual task, if its ID is provided in the URI.
-        The buildURIFromId function that we added to the TasksContract class,
-        will return a URI with the ID appended.
-        Because we're providing the ID, we don't need to use the last two parameters;
-        the where clause and selection args.
-        We just build up the URI from the ID of the task that's been passed to the function,
-        then call the delete function of the Content resolver.
-        The onDeleteClick function in MainActivityFragment will then call the ViewModel's delete task function,
-        to tell the ViewModel to delete the task.*/
+    fun deleteTask(taskId:Long) {
+
+//        In Kotlin thread{function}- a thread can be instantiated and executed simply
+//        More Info: https://www.baeldung.com/kotlin/threads-coroutines#kotlin-extension
+
+
+        GlobalScope.launch {
+
+            getApplication<Application>().contentResolver?.delete(
+                TasksContract.buildUriFromId(
+                    taskId
+                ), null, null
+            )
+            /** We'll pass in the ID of the task to delete, and call the ContentResolver's delete function to perform the deletion.
+            Our ContentProvider will take care of deleting an individual task, if its ID is provided in the URI.
+            The buildURIFromId function that we added to the TasksContract class,
+            will return a URI with the ID appended.
+            Because we're providing the ID, we don't need to use the last two parameters;
+            the where clause and selection args.
+            We just build up the URI from the ID of the task that's been passed to the function,
+            then call the delete function of the Content resolver.
+            The onDeleteClick function in MainActivityFragment will then call the ViewModel's delete task function,
+            to tell the ViewModel to delete the task.*/
+        }
     }
 
     //That function gets called when the ViewModel's no longer used and can be destroyed.
