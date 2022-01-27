@@ -130,7 +130,8 @@ class TaskTimerViewModel(application: Application) : AndroidViewModel(applicatio
              if (task.id==0L){
 //                 Add a new task
                  GlobalScope.launch {
-                     val  uri=getApplication<Application>().contentResolver?.insert(
+                     Log.d(TAG, "saveTask: adding new task")
+                     val uri=getApplication<Application>().contentResolver?.insert(
                          TasksContract.CONTENT_URI,values)
 //                     make sure that the uri is valid or not null
                     if (uri!=null){
@@ -144,8 +145,8 @@ class TaskTimerViewModel(application: Application) : AndroidViewModel(applicatio
 //                 Task do have an ID, so we are updating..
                 GlobalScope.launch{
                     Log.d(TAG,"saveTask: updating task")
-                    getApplication<Application>().contentResolver.update(
-                        TasksContract.CONTENT_URI,values,null,null)
+                    getApplication<Application>().contentResolver?.update(
+                        TasksContract.buildUriFromId(task.id),values,null,null)
 
                 }
              }

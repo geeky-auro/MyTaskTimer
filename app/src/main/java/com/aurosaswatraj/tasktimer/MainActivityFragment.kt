@@ -104,7 +104,9 @@ class MainActivityFragment : Fragment(),CursorRecyclerViewAdapter.onTaskClickLis
     }
 
     override fun onTaskLongClick(task: Task) {
-        TODO("Not yet implemented")
+        Log.d(TAG,"onLongClick pressed ")
+//       On Long Press we'll call the activity's onTaskEdit function in onEditClick.(out of context)
+        (activity as OnTaskEdit?)?.onTaskEdit(task)
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
