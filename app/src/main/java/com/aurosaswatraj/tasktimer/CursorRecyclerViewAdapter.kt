@@ -11,6 +11,8 @@ import kotlinx.android.synthetic.main.task_list_item.*
 
 private const val TAG = "CursorRecyclerViewAdapt"
 
+
+//A base interface for all view holders supporting Android Extensions-style view access.
 class TaskViewHolder(override val containerView: View) :
     RecyclerView.ViewHolder(containerView), LayoutContainer{
 //    By using an interface We can notify the fragment/activity that a button is tapped
