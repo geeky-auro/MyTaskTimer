@@ -1,6 +1,7 @@
 package com.aurosaswatraj.tasktimer
 
 import android.app.Application
+import android.content.ContentValues
 import android.database.ContentObserver
 import android.database.Cursor
 import android.net.Uri
@@ -109,6 +110,50 @@ class TaskTimerViewModel(application: Application) : AndroidViewModel(applicatio
 
     }
 //     Refer the screenshots for referring deletion in ViewModel Class
+
+    fun saveTask(task:Task):Task{
+        //    Update the Database if at least one field has changed
+//    There's no need to hit the database unless this has happened.. :)
+//    TO save the value in the database we will use the content provider..
+//    Note: This functions updates the database if we are editing the existing task
+
+//        To store values some where we use contentvalues
+        val values=ContentValues()
+
+        if (task.name.isNotEmpty()){
+//            Dont save a task with no name
+            values.put(TasksContract.Columns.TASK_NAME,task.name)
+            values.put(TasksContract.Columns.TASK_DESCRIPTION,task.description)
+            values.put(TasksContract.Columns.TASK_SORT_ORDER,task.sortorder)//defaults to zero if empty
+
+//            Now, if the task id is zero it means we have a new task.
+             if (task.id==0L){
+//                 Add a new task
+                 GlobalScope.launch {
+                     val  uri=getApplication<Application>().contentResolver?.insert(
+                         TasksContract.CONTENT_URI,values)
+//                     make sure that the uri is valid or not null
+                    if (uri!=null){
+//                        assign an id then,
+                        task.id=TasksContract.getId(uri)
+                        Log.d(TAG,"saveTask: new id is ${task.id}")
+                    }
+                 }
+
+             }else{
+//                 Task do have an ID, so we are updating..
+                GlobalScope.launch{
+                    Log.d(TAG,"saveTask: updating task")
+                    getApplication<Application>().contentResolver.update(
+                        TasksContract.CONTENT_URI,values,null,null)
+
+                }
+             }
+        }
+//        We are returning the task because The reason is, that it may now have an ID that it didn't have before.
+        return task
+
+    }
 
     fun deleteTask(taskId:Long) {
 

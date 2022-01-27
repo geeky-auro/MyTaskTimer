@@ -4,8 +4,8 @@ import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-class Task(val name: String, val description: String, val sortorder: Int) : Parcelable {
-    var id: Long = 0
+data class Task(val name: String, val description: String, val sortorder: Int,var id: Long = 0) : Parcelable {
+
 }
 
 /**A Parcelable is the Android implementation of the Java Serializable. It assumes a certain structure and way of processing it. This way a Parcelable can be processed relatively fast, compared to the standard Java serialization.
@@ -41,3 +41,5 @@ class Task(val name: String, val description: String, val sortorder: Int) : Parc
 // About Data Class: https://kotlinlang.org/docs/data-classes.html
 
 //Note there is a downside of using data class that it may include 18 more methods which could increase up number method size #note to use it when required,if not avoid using data class instead use a normal class
+//We will be using data class here because google depricated loader class for which we need to use data class
+//and we have modified the app to us use viewmodel instead.

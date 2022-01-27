@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import kotlinx.android.synthetic.main.fragment_add_edit.*
 
 
@@ -30,6 +31,11 @@ class AddEditFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var task: Task? = null
     private var listener: OnSaveClicked? = null
+//    View Model variable declaration
+    private val viewModel by lazy {
+        // ViewModelProviders.of(activity!!).get(TaskTimerViewModel::class.java)
+        ViewModelProvider(this).get(TaskTimerViewModel::class.java)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,51 +71,47 @@ class AddEditFragment : Fragment() {
         }
     }
 
-    private fun saveTask() {
-//    Update the Database if at least one field has changed
-//    There's no need to hit the database unless this has happened.. :)
-//    TO save the value in the database we will use the content provider..
-//    Note: This functions updates the database if we are editing the existing task
-//          else we are inserting the data into the database
-        val sortOrder = if (addedit_sortorder.text.isNotEmpty()) {
+
+    private fun taskfromUI() : Task{
+
+//        At the moment the saveTask function is using values from the EditText widgets in the layout.
+//        Thats where we come to need taskfromUI function
+
+//        To get the value of SortOrder
+        val sorOrder=if (addedit_sortorder.text.isNotEmpty()){
             Integer.parseInt(addedit_sortorder.text.toString())
-        } else {
+        }
+        else{
             0
         }
+//        we'll make our new task, assign it an ID, and then return it.
+        val newTask=Task(addedit_name.text.toString(),addedit_description.text.toString(),sorOrder)
+        newTask.id=task?.id?:0
+//        I used the Elvis operator (?:) on the above line, to assign the value 0 if the fragment's task is null.
+        return newTask
+    }
 
-        val values = ContentValues()
-        val task = task
+    private fun saveTask(){
+//        Create a newTask Object with the details to be saved, then
+//        Call the viewmodel's saveTask function to save it
+//        Task is now a data class , so we can compare the new details with the original task,
+//        and only save if they are different.
 
-        if (task != null) {
-            Log.d(TAG, "saveTask: updating existing task")
-            if (addedit_name.text.toString() != task.name) {
-                values.put(TasksContract.Columns.TASK_NAME, addedit_name.text.toString())
-            }
-            if (addedit_description.text.toString() != task.description) {
-                values.put(TasksContract.Columns.TASK_DESCRIPTION,
-                    addedit_description.text.toString())
-            }
-            if (sortOrder != task.sortorder) {
-                values.put(TasksContract.Columns.TASK_SORT_ORDER, sortOrder)
-            }
-            if (values.size() != 0) {
-                Log.d(TAG, "saveTask: Updating task")
-                activity?.contentResolver?.update(TasksContract.buildUriFromId(task.id),
-                    values, null, null)
-            }
-        } else {
-            Log.d(TAG, "saveTask: adding new task")
-            if (addedit_name.text.isNotEmpty()) {
-                values.put(TasksContract.Columns.TASK_NAME, addedit_name.text.toString())
-                if (addedit_description.text.isNotEmpty()) {
-                    values.put(TasksContract.Columns.TASK_DESCRIPTION,
-                        addedit_description.text.toString())
-                }
-                values.put(TasksContract.Columns.TASK_SORT_ORDER, sortOrder)  // defaults to zero if empty
-                activity?.contentResolver?.insert(TasksContract.CONTENT_URI, values)
-            }
+
+//        We'll create our new Task object, and we'll get the values from our EditText widgets.
+        val newTask=taskfromUI()
+//        Then we'll check to see if it's the same task that we were given, when the fragment was created.(the task that we are editing)
+//       We can compare two task instances, because a data class provides an equals function for us.
+        if (newTask != task){
+            Log.d(TAG,"saveTask, saving task , id is ${newTask.id}")
+//            We will call the save task function in the viewmodel
+            task=viewModel.saveTask(newTask)
         }
     }
+
+
+
+
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
