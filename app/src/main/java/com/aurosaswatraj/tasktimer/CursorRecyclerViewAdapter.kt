@@ -39,6 +39,9 @@ class TaskViewHolder(override val containerView: View) :
                 listener.onTaskLongClick(task)
                 true
             }
+            containerView.setOnClickListener {
+//                If required to do some onClick listener
+            }
         }
 //We'll pass in the task, because ultimately we'll want to provide the task details
 //        to whatever is listening for the buttons to be tapped.

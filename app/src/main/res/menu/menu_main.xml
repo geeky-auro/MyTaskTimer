@@ -4,7 +4,7 @@
     tools:context="com.aurosaswatraj.tasktimer.MainActivity">
     <item
         android:id="@+id/menumain_addTask"
-        android:icon="@android:drawable/ic_menu_add"
+        android:icon="@android:drawable/ic_input_add"
         android:title="@string/menutitle_addTask"
         android:orderInCategory="10"
         app:showAsAction="ifRoom" />

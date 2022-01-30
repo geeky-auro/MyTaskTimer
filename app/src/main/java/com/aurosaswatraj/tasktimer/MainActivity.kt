@@ -46,9 +46,14 @@ class MainActivity : AppCompatActivity(), AddEditFragment.OnSaveClicked,MainActi
 
         }
 
+        binding.fab.setOnClickListener {
+            taskEditRequest(null)
+        }
+
         Log.d(TAG, "onCreate: Finished")
 
     }
+
 
     private fun showEditPane() {
 //        There was an existing fragment to edit a task..Make sure the panes are set correctly
