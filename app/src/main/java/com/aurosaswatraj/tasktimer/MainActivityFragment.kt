@@ -82,6 +82,9 @@ class MainActivityFragment : Fragment(),CursorRecyclerViewAdapter.onTaskClickLis
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         Log.d(TAG, "onViewCreated: called")
         task_list.layoutManager = LinearLayoutManager(context) // <-- set up RecyclerView
+//        Setting up space between each tasks
+        val itemDecorator=SpacingItemDecorator(10)
+        task_list.addItemDecoration(itemDecorator)
         task_list.adapter = mAdapter
 
         super.onViewCreated(view, savedInstanceState)
