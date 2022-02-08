@@ -19,7 +19,8 @@
         android:minHeight="48dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"></EditText>
+        app:layout_constraintTop_toTopOf="parent"
+        android:textCursorDrawable="@drawable/black_cursor"></EditText>
 
     <EditText
         android:id="@+id/addedit_description"
@@ -35,7 +36,8 @@
         android:ems="10"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addedit_name"></EditText>
+        app:layout_constraintTop_toBottomOf="@+id/addedit_name"
+        android:textCursorDrawable="@drawable/black_cursor"></EditText>
 
     <EditText
         android:id="@+id/addedit_sortorder"
@@ -51,7 +53,9 @@
         android:ems="10"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addedit_description"></EditText>
+        app:layout_constraintTop_toBottomOf="@+id/addedit_description"
+        android:textCursorDrawable="@drawable/black_cursor"
+        ></EditText>
 
     <Button
         android:id="@+id/addedit_save"
