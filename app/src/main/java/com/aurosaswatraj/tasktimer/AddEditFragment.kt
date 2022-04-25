@@ -1,7 +1,6 @@
 package com.aurosaswatraj.tasktimer
 
 import android.annotation.SuppressLint
-import android.content.ContentValues
 import android.content.Context
 import android.os.Bundle
 import android.util.Log

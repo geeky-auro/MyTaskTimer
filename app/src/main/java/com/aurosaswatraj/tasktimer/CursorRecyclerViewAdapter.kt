@@ -78,7 +78,8 @@ class CursorRecyclerViewAdapter(private var cursor: Cursor?,private val listener
             holder.tli_edit.visibility = View.GONE
             holder.tli_delete.visibility = View.GONE
 
-        } else {
+        }
+        else {
 //            THere is some data /records available.>!
             if (!cursor.moveToPosition(position)) {
                 throw IllegalStateException("Couldn't move to the position $position")
