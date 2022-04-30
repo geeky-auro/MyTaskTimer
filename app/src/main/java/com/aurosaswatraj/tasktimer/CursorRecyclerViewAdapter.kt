@@ -59,6 +59,7 @@ class CursorRecyclerViewAdapter(private var cursor: Cursor?,private val listener
 //      so that the adapter knows what to call.(Adding in the primary Constructor)
     }
 
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
         Log.d(TAG, "onCreateViewHolder STARTS: new View Requested.!")
         val view =

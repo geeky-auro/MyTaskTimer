@@ -160,6 +160,8 @@ class TaskTimerViewModel(application: Application) : AndroidViewModel(applicatio
 //        More Info: https://www.baeldung.com/kotlin/threads-coroutines#kotlin-extension
 
 
+
+
         GlobalScope.launch {
 
             getApplication<Application>().contentResolver?.delete(
