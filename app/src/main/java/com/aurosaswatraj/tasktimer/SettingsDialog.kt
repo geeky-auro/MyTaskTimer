@@ -1,5 +1,7 @@
 package com.aurosaswatraj.tasktimer
 
+import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatDialogFragment
 import java.util.*
 
@@ -19,6 +21,13 @@ class SettingsDialog:AppCompatDialogFragment() {
     private val defaultFirstDayOfWeek = GregorianCalendar(Locale.getDefault()).firstDayOfWeek
     private var firstDay = defaultFirstDayOfWeek
     private var ignoreLessThan = SETTINGS_DEFAULT_IGNORE_LESS_THAN
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d(TAG, "onCreate: called")
+        super.onCreate(savedInstanceState)
+        setStyle(AppCompatDialogFragment.STYLE_NORMAL, R.style.SettingsDialogStyle)
+        retainInstance = true
+    }
 
 
 }
