@@ -32,6 +32,8 @@ Tasks with lower sort orders will be placed higher up the list.Tasks with the sa
 Tapping a task will start the timer for that task (and will stop the timer for any previous task that was being timed).
 
 Each task has Edit and Delete buttons if you want to change the details or remove the task.</string>
+    <string name="ok">Ok</string>
+    <string name="cancel">Cancel</string>
 
 
 </resources>
