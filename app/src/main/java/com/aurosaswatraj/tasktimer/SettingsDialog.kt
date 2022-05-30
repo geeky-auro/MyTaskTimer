@@ -69,11 +69,11 @@ class SettingsDialog:AppCompatDialogFragment() {
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                TODO("Not yet implemented")
+//                We dont need this
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                TODO("Not yet implemented")
+//                Nor this
             }
         })
 
